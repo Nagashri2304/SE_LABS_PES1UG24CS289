@@ -1,0 +1,57 @@
+Issue Type,Issue Id,Parent Id,Summary,Description,Priority,Story Points,Epic Name,Sprint
+Epic,1,,Epic 1: Flag Lifecycle & Metadata Management,"Enable Software Engineers to define, configure, and maintain feature flags with unique keys, default states, and multi-environment overrides (Dev, Staging, Prod) to prevent configuration drift and safely test features.",High,,Flag Lifecycle & Metadata Management,
+Epic,2,,Epic 2: Targeting Rules & Gradual Rollouts,"Enable engineering teams to configure granular user cohort targeting (e.g. beta groups, user ID attributes) and deterministic percentage rollouts (0-100%) to safely limit blast radius and validate releases.",High,,Targeting Rules & Gradual Rollouts,
+Epic,3,,"Epic 3: Governance, Approval Workflows & Audit Logging","Provide Release Managers with an approval gate to inspect configuration diffs, enforce 4-eyes principle before production changes, and maintain an immutable audit trail for compliance and rollbacks.",High,,"Governance, Approval Workflows & Audit Logging",
+Epic,4,,Epic 4: High-Performance Evaluation & Real-Time SDK Sync,Deliver low-latency flag evaluation API (< 15ms p95) and push instantaneous configuration changes to connected client SDKs via persistent WebSockets/streaming connections without requiring client redeployments.,High,,High-Performance Evaluation & Real-Time SDK Sync,
+Story,5,1,US-01: Create Feature Flag with Unique Key and Default State,"As a Software Engineer, I want to create a feature flag with a unique key, description, and default state (enabled/disabled), so that my client application can reference the flag unambiguously.
+
+Acceptance Criteria:
+- Submitting a flag key that already exists is rejected with a duplicate-key error.
+- A unique key is created and appears in the flag list within 2 seconds.
+- Default state is properly persisted.",High,3,,Sprint 1
+Story,6,2,US-02: Configure Deterministic Percentage-Based Rollout,"As a Software Engineer, I want to configure a percentage rollout (0-100%) based on a deterministic hash of user IDs, so that I can gradually roll out features and minimize blast radius.
+
+Acceptance Criteria:
+- Setting rollout to 25% results in 25% (+/-2%) of 10,000 simulated user IDs receiving enabled state.
+- Cohort assignment for a given user ID remains strictly deterministic across repeated evaluations.",High,5,,Sprint 1
+Story,7,2,US-03: Evaluate User Targeting Rules for Cohorts,"As a Software Engineer, I want to define targeting rules based on user attributes (e.g., User ID hash, beta cohort membership), so that specific user segments receive early access to features.
+
+Acceptance Criteria:
+- A user in the targeted cohort receives the enabled flag.
+- Any user outside the cohort receives the fallback/disabled flag accurately.",High,5,,Sprint 1
+Story,8,4,US-04: Optimize Evaluation API Engine to Sub-15ms Latency,"As a Software Engineer, I want the flag evaluation engine to execute in under 15ms, so that integrating flag checks into client critical paths adds negligible overhead.
+
+Acceptance Criteria:
+- Benchmarking tests confirm p95 latency under 15 ms under peak load.
+- Memory-cached lookup prevents unnecessary database queries.",High,8,,Sprint 1
+Story,9,4,US-05: Implement Client SDK Local Cache and Fallback,"As a Client Application Developer, I want the SDK to maintain a local in-memory cache with fallback defaults, so that temporary network dropouts do not break host application features.
+
+Acceptance Criteria:
+- In-memory evaluations return within 1ms during offline scenarios.
+- System logs a warning and falls back to default state safely if disconnected.",Medium,3,,Sprint 1
+Story,10,1,US-06: Define Environment-Specific Configuration Overrides,"As a Software Engineer, I want to define environment-specific overrides (Development, Staging, Production), so that I can test a flag in lower environments without exposing it in Production.
+
+Acceptance Criteria:
+- Setting Production override to OFF while Staging is ON returns disabled for Production and enabled for Staging.
+- No configuration leaks across environment boundaries.",Medium,5,,Sprint 2
+Story,11,3,US-07: Draft Flag Revisions and Preview Visual Configuration Diff,"As a Software Engineer, I want to save configuration changes as pending revisions and view a visual diff against the published state, so that I can verify my modifications before asking for approval.
+
+Acceptance Criteria:
+- Pending drafts are saved without affecting live client evaluation.
+- Visual diff clearly contrasts old vs new rules, percentages, and overrides.",Medium,3,,Sprint 2
+Story,12,3,"US-08: Release Manager Review, Approval Gate, and Validation","As a Release Manager, I want to review, approve, or reject pending flag changes with validation checks, so that only verified and safe flag configurations reach production.
+
+Acceptance Criteria:
+- Only authenticated users with Release Manager role can publish.
+- Schema, consistency, and 0-100% ranges are validated prior to publishing.
+- Rejection records reasons and leaves the live version untouched.",High,5,,Sprint 2
+Story,13,3,US-09: Immutable Audit Logging and One-Click Rollback,"As a Release Manager, I want all configuration changes recorded in an immutable audit log with one-click rollback, so that team actions are traceable for security compliance and fast disaster recovery.
+
+Acceptance Criteria:
+- Every successful publish creates an unalterable audit entry with approver, timestamp, and previous value.
+- One-click rollback restores prior published version in under 3 seconds.",High,5,,Sprint 2
+Story,14,4,US-10: Real-Time Flag State Streaming to Connected SDKs,"As a Client Application / SDK Developer, I want updated flag states pushed via real-time WebSocket streaming, so that clients reflect new configs within 5 seconds without redeployment.
+
+Acceptance Criteria:
+- 95% of connected SDK instances receive new values within 5 seconds of publish.
+- Connection drop triggers auto-reconnect with latest version snapshot.",High,5,,Sprint 2
