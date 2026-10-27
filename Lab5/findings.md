@@ -1,0 +1,33 @@
+# Lab 5: Static Code Analysis Findings — Hotel Booking System
+
+**Course:** Software Engineering Laboratory (UE23CS252AA)  
+**Assigned Source Repository:** [SETAPESU26/L5_43_hotel_booking_system](https://github.com/SETAPESU26/L5_43_hotel_booking_system)  
+**Source Script:** `hotel_booking_system.py`  
+**Tools Applied:** Pylint 4.1.3, Bandit 1.9.4, Flake8 7.4.1  
+
+---
+
+## Static Code Analysis Findings Table
+
+| Issue | Tool | Type/severity | Original line(s) | Description | Fix applied | Verification |
+|---|---|---|---|---|---|---|
+| Dangerous mutable default argument | Pylint | Warning / Medium (`W0102: dangerous-default-value`) | 15 | `def bookRoom(room_num, guest_name, booking_log=[]):` defines an empty list as a default parameter. In Python, default arguments are evaluated once at function definition, meaning the list persists across multiple function calls, bleeding state between distinct guest bookings. | Changed default parameter to `booking_log=None` and initialized `booking_log = []` inside the function body when `None`. Renamed function to `book_room` following PEP 8. | Pylint `W0102` resolved; unit test `test_book_room_mutable_default_isolated` verified that independent invocations receive fresh isolated lists. |
+| Arbitrary dynamic code execution (`eval`) | Bandit & Pylint | Security / Medium (`B307: blacklist eval`, CWE-78) & Warning (`W0123: eval-used`) | 42 | `compute_seasonal_rate()` calls `eval(rate_expr)` directly on a formula string. Evaluating untrusted expressions exposes the system to arbitrary remote code execution (RCE) and system compromise. | Replaced `eval()` with `_safe_eval_math()` using Python's `ast` module. The function safely parses the AST and allows only binary arithmetic operations (`+`, `-`, `*`, `/`) on numeric constants and verified context variables (`base_price`). | Bandit `B307` and Pylint `W0123` completely resolved; unit test `test_compute_seasonal_rate_safety` verified that injecting `__import__('os').system(...)` raises a `ValueError`. |
+| Process execution with shell injection risk | Bandit | Security / High (`B605: start_process_with_a_shell`, CWE-78) | 58 | `export_room_ledger()` executes `os.system("echo Hotel ledger exported to: " + filename)` via the operating system shell. Any attacker controlling `filename` can execute arbitrary shell commands. | Removed `os.system()` and substituted native Python `print(f"Hotel ledger exported to: {filename}")`, completely eliminating subprocess execution and shell dependency. | Bandit `B605` eliminated; ledger output verified via unit test `test_export_room_ledger`. |
+| Weak cryptographic hash algorithm (MD5) | Bandit | Security / High (`B324: hashlib MD5`, CWE-327) | 47 | `hashlib.md5(guest_id.encode()).hexdigest()` uses MD5 for guest identification hashing. MD5 suffers from well-documented collision vulnerabilities and is unacceptable for security identifiers. | Upgraded hash algorithm to secure SHA-256: `hashlib.sha256(guest_id.encode("utf-8")).hexdigest()`. | Bandit `B324` eliminated; unit test `test_generate_guest_hash_sha256` verified that 64-character hexadecimal SHA-256 digests are generated. |
+| Insecure pseudo-random number generator | Bandit | Security / Low (`B311: blacklist random`, CWE-330) | 51 | `random.randint(1000, 9999)` relies on Mersenne Twister PRNG, which is mathematically predictable and unsuitable for reservation tokens or reference identifiers. | Replaced `random.randint()` with cryptographically secure `secrets.SystemRandom().randint(1000, 9999)`. | Bandit `B311` eliminated; unit test `test_generate_booking_ref` confirmed generated references fall within `[1000, 9999]`. |
+| Hardcoded administrative reservation token | Bandit | Security / Low (`B105: hardcoded_password_string`, CWE-259) | 62 | `hotel_secret_key = "HOTEL_ADMIN_RESERVATION_TOKEN_2026"` embeds sensitive administrative credentials directly in source code, risking leakage via version control. | Retrieved the credential securely from environment variable with fallback: `os.environ.get("HOTEL_ADMIN_RESERVATION_TOKEN", "HOTEL_ADMIN_RESERVATION_TOKEN_2026")`. | Bandit `B105` eliminated; environment variable retrieval confirmed. |
+| Bare `except:` clause and blind error suppression | Flake8, Pylint, Bandit | Error (`E722`), Warning (`W0702`), Security Low (`B110: try_except_pass`, CWE-703) | 26–27 | `cancel_booking()` used `except: pass`, which blindly catches all exceptions (including `SystemExit` and `KeyboardInterrupt`) and silently swallows unhandled errors. | Replaced exception-driven control flow with explicit key membership checking: `if room_num in room_inventory: room_inventory[room_num]["is_booked"] = False`. | Flake8 `E722`, Pylint `W0702`, and Bandit `B110` eliminated; unit test `test_cancel_booking` verified canceling nonexistent room IDs runs safely without throwing or swallowing general errors. |
+| Unused imports and dead variable assignments | Flake8 & Pylint | Warning (`F401`, `F841`, `W0611`, `W0612`) | 6, 31, 41 | Unused import `math`, unused variable `cleaning_deposit = 25.0`, and unreferenced `base_price` cluttered code and wasted memory. | Removed `import math` and unused assignment `cleaning_deposit`. Kept `base_price` utilized in the AST evaluation context. | Flake8 `F401`/`F841` and Pylint `W0611`/`W0612` eliminated. |
+| PEP 8 line length, syntax formatting, and resource handling | Flake8 & Pylint | Style / Convention (`E501`, `E711`, `W292`, `C0103`, `C0116`, `C0121`, `C0209`, `R1703`, `R1705`, `R1732`, `W1514`) | 15, 19, 32, 34–37, 55, 73 | Line length exceeding 79 chars, singleton comparison `== None`, non-snake_case function name `bookRoom`, missing docstrings, `%` string formatting, unmanaged file handle without context manager, and missing trailing newline. | Wrapped lines to <= 79 characters, used `is None`, renamed function to `book_room`, added comprehensive docstrings, used f-strings, wrapped file operations in `with open(..., encoding="utf-8")`, and added EOF newline. | Flake8 zero violations; Pylint achieved 10.00/10 rating. |
+
+---
+
+## Metrics Summary
+
+- **Pylint Score Before:** 5.32 / 10
+- **Pylint Score After:** 10.00 / 10
+- **Bandit Findings Before:** 6 issues (2 High, 1 Medium, 3 Low)
+- **Bandit Findings After:** 0 issues (0 High, 0 Medium, 0 Low)
+- **Flake8 Violations Before:** 7 violations
+- **Flake8 Violations After:** 0 violations

@@ -15,6 +15,7 @@
 | **Lab 2** | **Agile Backlog Creation & Sprint Simulation in Jira** | Problem Statement #43 – Feature Flag & Dynamic Config Manager | **Completed** | [📂 `Lab-2/` Deliverables](./Lab-2/README.md) |
 | **Lab 3** | **Requirements Engineering & Architectural Modeling** | Problem Statement #43 – Feature Flag & Dynamic Config Manager | **Completed** | [📂 `Lab-3/` Deliverables](./Lab-3/README.md) |
 | **Lab 4** | **VibeCoding & AI-Assisted Engineering** | 43_reaction-time-tester | **Completed** | [📂 `Lab-4/` Deliverables](./Lab-4/README.md) |
+| **Lab 5** | **Static Code Analysis** | Problem Statement #43 – Hotel Booking System | **Completed** | [📂 `Lab5/` Deliverables](./Lab5/README.md) |
 
 ---
 
@@ -63,3 +64,18 @@
   - VibeCoding chat records in `chat_history/`: `VibeCoding_Lab4_PES1UG24CS289_Nagashri_R_Patil.pdf`, `.docx`, and `chat_history.md`.
   - Initial buggy code backup in `buggy_code_backup/`.
   - Source: [Nagashri2304/LAB4_43_reaction-time-tester](https://github.com/Nagashri2304/LAB4_43_reaction-time-tester)
+
+---
+
+### 5. [Lab-5: Static Code Analysis — Hotel Booking System](./Lab5/)
+- **Assigned Problem Statement:** #43 – Hotel Room Reservation & Inventory System
+- **Deliverables:**
+  - Secure and cleaned Python source file: [`hotel_booking_system.py`](./Lab5/hotel_booking_system.py) (Pylint: **10.00/10**, Bandit: **0 issues**, Flake8: **0 violations**).
+  - Automated unit test suite: [`test_hotel_booking.py`](./Lab5/test_hotel_booking.py) (10/10 tests passing).
+  - Detailed findings table: [`findings.md`](./Lab5/findings.md).
+  - Reflection report: [`reflection.md`](./Lab5/reflection.md).
+  - Baseline analysis reports: `pylint_report_before.txt`, `bandit_report_before.txt`, `flake8_report_before.txt`.
+  - Final verification reports: `pylint_report_after.txt`, `bandit_report_after.txt`, `flake8_report_after.txt`.
+  - Reproduction guide: [`Lab5/README.md`](./Lab5/README.md).
+  - Source: [SETAPESU26/L5_43_hotel_booking_system](https://github.com/SETAPESU26/L5_43_hotel_booking_system)
+

@@ -24,9 +24,6 @@ def book_room(room_num, guest_name, booking_log=None):
     return True
 
 
-bookRoom = book_room
-
-
 def cancel_booking(room_num):
     """Cancel an existing room booking and release room inventory."""
     if room_num in room_inventory:
@@ -41,7 +38,7 @@ def check_room_status(room_num):
 
 
 def _safe_eval_math(expression, context):
-    """Safely evaluate basic arithmetic expressions without arbitrary code execution."""
+    """Safely evaluate basic arithmetic expressions without code injection."""
     operators = {
         ast.Add: operator.add,
         ast.Sub: operator.sub,
@@ -51,7 +48,9 @@ def _safe_eval_math(expression, context):
     parsed = ast.parse(expression, mode="eval").body
 
     def _eval(node):
-        if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+        if isinstance(node, ast.Constant) and isinstance(
+            node.value, (int, float)
+        ):
             return node.value
         if isinstance(node, ast.Name) and node.id in context:
             return context[node.id]
