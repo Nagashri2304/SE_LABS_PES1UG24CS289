@@ -71,7 +71,7 @@
 - **Assigned Problem Statement:** #43 – Hotel Room Reservation & Inventory System
 - **Deliverables:**
   - Secure and cleaned Python source file: [`hotel_booking_system.py`](./Lab5/hotel_booking_system.py) (Pylint: **10.00/10**, Bandit: **0 issues**, Flake8: **0 violations**).
-  - Automated unit test suite: [`test_hotel_booking.py`](./Lab5/test_hotel_booking.py) (10/10 tests passing).
+  - Automated unit test suite: [`test_hotel_booking.py`](./Lab5/test_hotel_booking.py) (13/13 tests passing).
   - Detailed findings table: [`findings.md`](./Lab5/findings.md).
   - Reflection report: [`reflection.md`](./Lab5/reflection.md).
   - Baseline analysis reports: `pylint_report_before.txt`, `bandit_report_before.txt`, `flake8_report_before.txt`.

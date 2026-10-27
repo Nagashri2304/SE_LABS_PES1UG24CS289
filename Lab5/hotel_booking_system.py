@@ -86,12 +86,18 @@ def export_room_ledger(filename="hotel_ledger.txt"):
     print(f"Hotel ledger exported to: {filename}")
 
 
+def get_admin_token():
+    """Retrieve administrator token from environment or None if unset."""
+    token = os.environ.get("HOTEL_ADMIN_RESERVATION_TOKEN")
+    if not token or not token.strip():
+        return None
+    return token.strip()
+
+
 def main():
     """Main execution function demonstrating reservation workflow."""
-    admin_token = os.environ.get(
-        "HOTEL_ADMIN_RESERVATION_TOKEN",
-        "HOTEL_ADMIN_RESERVATION_TOKEN_2026",
-    )
+    admin_token = get_admin_token()
+    is_admin_configured = admin_token is not None
     book_room("101", "Emma Watson")
     cancel_booking("102")
     print("Is 103 available:", check_room_status("103"))
@@ -99,7 +105,12 @@ def main():
     print("Guest Hash:", generate_guest_hash("GUEST_991"))
     print("Booking Reference:", generate_booking_ref())
     export_room_ledger()
-    print("Secret key active:", admin_token)
+    print(
+        "Secret key active:",
+        "Yes (configured via environment)"
+        if is_admin_configured
+        else "No (unconfigured)",
+    )
 
 
 if __name__ == "__main__":

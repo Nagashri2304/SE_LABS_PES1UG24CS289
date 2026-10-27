@@ -59,7 +59,7 @@ Applying targeted fixes directly addressed all identified flaws:
   - Eliminating `os.system()` in favor of native Python `print()` permanently prevented shell injection attacks and removed platform-dependent shell dependencies.
   - Upgrading to `hashlib.sha256` ensured collision-resistant cryptographic hashing.
   - Switching to `secrets.SystemRandom().randint(1000, 9999)` provided cryptographically secure randomness suitable for reservation references.
-  - Sourcing credentials from environment variables (`os.environ.get`) kept secrets out of version control.
+  - Sourcing credentials strictly from environment variables (`os.environ.get`) without hardcoded fallback strings, handling missing configuration gracefully, and preventing terminal leakage by printing only configuration status rather than sensitive token values.
 - **Correctness and Reliability:**
   - Replacing mutable default argument `booking_log=[]` with `booking_log=None` ensured state isolation across independent booking transactions.
   - Replacing bare `except:` with explicit dictionary membership verification (`if room_num in room_inventory:`) prevented silent masking of critical system exceptions.

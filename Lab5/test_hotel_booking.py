@@ -1,7 +1,10 @@
 """Unit tests for hotel booking system module."""
 
+import io
 import os
 import unittest
+from unittest.mock import patch
+
 from hotel_booking_system import (
     room_inventory,
     book_room,
@@ -11,11 +14,13 @@ from hotel_booking_system import (
     generate_guest_hash,
     generate_booking_ref,
     export_room_ledger,
+    get_admin_token,
+    main,
 )
 
 
 class TestHotelBookingSystem(unittest.TestCase):
-    """Test cases verifying functionality and security of hotel booking system."""
+    """Test cases verifying functionality and security of the system."""
 
     def setUp(self):
         """Reset room inventory before each test case."""
@@ -63,12 +68,12 @@ class TestHotelBookingSystem(unittest.TestCase):
         self.assertEqual(rate, 187.5)
 
     def test_compute_seasonal_rate_safety(self):
-        """Verify that arbitrary code execution payloads are safely rejected."""
+        """Verify arbitrary code execution payloads are safely rejected."""
         with self.assertRaises(ValueError):
             compute_seasonal_rate("101", "__import__('os').system('dir')")
 
     def test_generate_guest_hash_sha256(self):
-        """Test guest identification hash uses secure SHA-256 (64 hex characters)."""
+        """Test guest identification hash uses secure SHA-256 (64 hex)."""
         digest = generate_guest_hash("GUEST_991")
         self.assertEqual(len(digest), 64)
 
@@ -90,6 +95,36 @@ class TestHotelBookingSystem(unittest.TestCase):
         finally:
             if os.path.exists(test_file):
                 os.remove(test_file)
+
+    def test_get_admin_token_from_environment(self):
+        """Verify token is successfully read from environment variable."""
+        with patch.dict(
+            os.environ,
+            {"HOTEL_ADMIN_RESERVATION_TOKEN": "VALID_ENV_SECRET_99"},
+        ):
+            token = get_admin_token()
+            self.assertEqual(token, "VALID_ENV_SECRET_99")
+
+    def test_get_admin_token_missing_or_empty(self):
+        """Verify missing/empty token is handled safely without fallback."""
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertIsNone(get_admin_token())
+        with patch.dict(os.environ, {"HOTEL_ADMIN_RESERVATION_TOKEN": "   "}):
+            self.assertIsNone(get_admin_token())
+
+    def test_main_does_not_leak_secret_value(self):
+        """Verify main() never prints raw secrets or tokens to stdout."""
+        secret_value = "SUPER_CONFIDENTIAL_TOKEN_XYZ_98765"
+        with patch.dict(
+            os.environ, {"HOTEL_ADMIN_RESERVATION_TOKEN": secret_value}
+        ):
+            captured_stdout = io.StringIO()
+            with patch("sys.stdout", captured_stdout):
+                main()
+            output = captured_stdout.getvalue()
+            # The secret token value itself must NEVER appear in output
+            self.assertNotIn(secret_value, output)
+            self.assertIn("Yes (configured via environment)", output)
 
 
 if __name__ == "__main__":

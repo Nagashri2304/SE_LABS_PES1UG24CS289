@@ -24,7 +24,7 @@ Three industry-standard static analysis tools were employed:
 | File | Description |
 |---|---|
 | [`hotel_booking_system.py`](./hotel_booking_system.py) | Cleaned, secured, and PEP 8 compliant source code (Pylint: **10.00/10**, Bandit: **0 issues**, Flake8: **0 violations**). |
-| [`test_hotel_booking.py`](./test_hotel_booking.py) | Unit test suite verifying functionality, edge cases, state isolation, and security controls. |
+| [`test_hotel_booking.py`](./test_hotel_booking.py) | Unit test suite verifying functionality, edge cases, state isolation, and security controls (13/13 passing). |
 | [`findings.md`](./findings.md) | Comprehensive table documenting all identified issues, line numbers, severity, fixes, and verification evidence. |
 | [`reflection.md`](./reflection.md) | Detailed student-level answers to the five laboratory reflection questions. |
 | [`pylint_report_before.txt`](./pylint_report_before.txt) | Baseline Pylint static analysis report before modifications (Score: **5.32/10**). |
@@ -43,7 +43,7 @@ Three industry-standard static analysis tools were employed:
 | **Pylint Rating** | `5.32 / 10` | **`10.00 / 10`** | **+4.68 improvement (Perfect score)** |
 | **Bandit Findings** | 6 issues (2 High, 1 Med, 3 Low) | **0 issues** | **100% vulnerabilities resolved without suppression** |
 | **Flake8 Violations** | 7 violations | **0 violations** | **Full PEP 8 compliance** |
-| **Unit Tests Passing** | N/A (untested) | **10 / 10 passed** | **Core functionality preserved & verified** |
+| **Unit Tests Passing** | N/A (untested) | **13 / 13 passed** | **Core functionality & security controls verified** |
 
 ---
 
@@ -53,63 +53,91 @@ Three industry-standard static analysis tools were employed:
 - Python 3.10+ (tested on Python 3.11.9)
 - Git
 
-### 2. Create and Activate Virtual Environment
-```bash
-# Create an isolated virtual environment
-python -m venv venv
+### 2. Create and Activate Virtual Environment in Windows PowerShell
 
-# Activate the virtual environment
-# Windows (PowerShell):
+Create the virtual environment:
+```powershell
+python -m venv venv
+```
+
+Activate the virtual environment in Windows PowerShell:
+```powershell
 .\venv\Scripts\Activate.ps1
-# Windows (cmd):
+```
+
+*(Optional) If script execution is restricted in PowerShell:*
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+```
+
+*(Alternative for Windows Command Prompt):*
+```cmd
 .\venv\Scripts\activate.bat
-# Linux / macOS:
-source venv/bin/activate
 ```
 
 ### 3. Install Static Analysis Tools
-```bash
+
+Install Pylint, Bandit, and Flake8:
+```powershell
 pip install pylint bandit flake8
 ```
 
 ### 4. Run the Program
-```bash
+
+Execute the cleaned application:
+```powershell
 python hotel_booking_system.py
 ```
-**Expected Output:**
+
+**Safe Expected Terminal Output (Default / Unconfigured):**
 ```text
 Is 103 available: True
 Surge price: 187.5
 Guest Hash: 6d7f221fa359b1754599b3aa07ca54f52b4e136267d3e3b505fc5d64df61100d
-Booking Reference: 3344
+Booking Reference: 7615
 Hotel ledger exported to: hotel_ledger.txt
-Secret key active: HOTEL_ADMIN_RESERVATION_TOKEN_2026
+Secret key active: No (unconfigured)
+```
+
+*(Optional) Configure token via environment variable without hardcoding:*
+```powershell
+$env:HOTEL_ADMIN_RESERVATION_TOKEN = "MY_ADMIN_TOKEN_123"
+python hotel_booking_system.py
+```
+Output confirms configuration safely without leaking secret values:
+```text
+Secret key active: Yes (configured via environment)
 ```
 
 ### 5. Run the Automated Unit Tests
-```bash
+
+Execute the unit test suite:
+```powershell
 python -m unittest test_hotel_booking.py
 ```
-**Expected Output:**
+
+**Actual Verified Output:**
 ```text
-..........
+.............
 ----------------------------------------------------------------------
-Ran 10 tests in 0.005s
+Ran 13 tests in 0.011s
 
 OK
 ```
 
 ### 6. Reproduce Static Code Analysis Reports
 
-To regenerate and verify the static analysis reports:
-
-```bash
-# 1. Pylint Analysis
+Run Pylint and save report:
+```powershell
 pylint hotel_booking_system.py > pylint_report_after.txt
+```
 
-# 2. Bandit Security Audit
+Run Bandit and save report:
+```powershell
 bandit -r hotel_booking_system.py > bandit_report_after.txt
+```
 
-# 3. Flake8 Style Check
+Run Flake8 and save report:
+```powershell
 flake8 hotel_booking_system.py > flake8_report_after.txt
 ```
