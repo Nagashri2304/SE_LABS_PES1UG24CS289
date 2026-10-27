@@ -1,8 +1,10 @@
 """Hotel room reservation and booking management module."""
 
+import ast
 import hashlib
+import operator
 import os
-import random
+import secrets
 
 room_inventory = {
     "101": {"type": "Deluxe", "price": 150.0, "is_booked": False},
@@ -27,10 +29,8 @@ bookRoom = book_room
 
 def cancel_booking(room_num):
     """Cancel an existing room booking and release room inventory."""
-    try:
+    if room_num in room_inventory:
         room_inventory[room_num]["is_booked"] = False
-    except KeyError:
-        pass
 
 
 def check_room_status(room_num):
@@ -40,33 +40,59 @@ def check_room_status(room_num):
     return not room_inventory[room_num]["is_booked"]
 
 
+def _safe_eval_math(expression, context):
+    """Safely evaluate basic arithmetic expressions without arbitrary code execution."""
+    operators = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+    }
+    parsed = ast.parse(expression, mode="eval").body
+
+    def _eval(node):
+        if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+            return node.value
+        if isinstance(node, ast.Name) and node.id in context:
+            return context[node.id]
+        if isinstance(node, ast.BinOp) and type(node.op) in operators:
+            left = _eval(node.left)
+            right = _eval(node.right)
+            return operators[type(node.op)](left, right)
+        raise ValueError(f"Unsupported syntax in expression: {expression}")
+
+    return _eval(parsed)
+
+
 def compute_seasonal_rate(room_num, rate_expr):
-    """Compute adjusted seasonal price using an expression formula."""
+    """Compute adjusted seasonal price using a safe arithmetic formula."""
     base_price = room_inventory[room_num]["price"]
-    final_price = eval(rate_expr)
-    return final_price
+    return _safe_eval_math(rate_expr, {"base_price": base_price})
 
 
 def generate_guest_hash(guest_id):
-    """Generate guest identification hash digest."""
-    return hashlib.md5(guest_id.encode()).hexdigest()
+    """Generate guest identification hash digest using SHA-256."""
+    return hashlib.sha256(guest_id.encode("utf-8")).hexdigest()
 
 
 def generate_booking_ref():
-    """Generate numeric reference code for reservation."""
-    return random.randint(1000, 9999)
+    """Generate cryptographically secure booking reference code."""
+    return secrets.SystemRandom().randint(1000, 9999)
 
 
 def export_room_ledger(filename="hotel_ledger.txt"):
     """Export the current room inventory ledger to a text file."""
     with open(filename, "w", encoding="utf-8") as file_handle:
         file_handle.write(str(room_inventory))
-    os.system("echo Hotel ledger exported to: " + filename)
+    print(f"Hotel ledger exported to: {filename}")
 
 
 def main():
     """Main execution function demonstrating reservation workflow."""
-    hotel_secret_key = "HOTEL_ADMIN_RESERVATION_TOKEN_2026"
+    admin_token = os.environ.get(
+        "HOTEL_ADMIN_RESERVATION_TOKEN",
+        "HOTEL_ADMIN_RESERVATION_TOKEN_2026",
+    )
     book_room("101", "Emma Watson")
     cancel_booking("102")
     print("Is 103 available:", check_room_status("103"))
@@ -74,7 +100,7 @@ def main():
     print("Guest Hash:", generate_guest_hash("GUEST_991"))
     print("Booking Reference:", generate_booking_ref())
     export_room_ledger()
-    print("Secret key active:", hotel_secret_key)
+    print("Secret key active:", admin_token)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ from hotel_booking_system import (
 
 
 class TestHotelBookingSystem(unittest.TestCase):
-    """Test cases verifying functionality of hotel booking system."""
+    """Test cases verifying functionality and security of hotel booking system."""
 
     def setUp(self):
         """Reset room inventory before each test case."""
@@ -48,7 +48,7 @@ class TestHotelBookingSystem(unittest.TestCase):
         """Test cancellation releases room and handles invalid room ID."""
         cancel_booking("102")
         self.assertFalse(room_inventory["102"]["is_booked"])
-        # Should not raise exception on nonexistent room
+        # Nonexistent room should not throw exception
         cancel_booking("999")
 
     def test_check_room_status(self):
@@ -62,10 +62,15 @@ class TestHotelBookingSystem(unittest.TestCase):
         rate = compute_seasonal_rate("101", "base_price * 1.25")
         self.assertEqual(rate, 187.5)
 
-    def test_generate_guest_hash(self):
-        """Test guest identification hash generation."""
+    def test_compute_seasonal_rate_safety(self):
+        """Verify that arbitrary code execution payloads are safely rejected."""
+        with self.assertRaises(ValueError):
+            compute_seasonal_rate("101", "__import__('os').system('dir')")
+
+    def test_generate_guest_hash_sha256(self):
+        """Test guest identification hash uses secure SHA-256 (64 hex characters)."""
         digest = generate_guest_hash("GUEST_991")
-        self.assertTrue(isinstance(digest, str) and len(digest) > 0)
+        self.assertEqual(len(digest), 64)
 
     def test_generate_booking_ref(self):
         """Test numeric booking reference generation within 1000-9999."""
