@@ -16,6 +16,7 @@
 | **Lab 3** | **Requirements Engineering & Architectural Modeling** | Problem Statement #43 – Feature Flag & Dynamic Config Manager | **Completed** | [📂 `Lab-3/` Deliverables](./Lab-3/README.md) |
 | **Lab 4** | **VibeCoding & AI-Assisted Engineering** | 43_reaction-time-tester | **Completed** | [📂 `Lab-4/` Deliverables](./Lab-4/README.md) |
 | **Lab 5** | **Static Code Analysis** | Problem Statement #43 – Hotel Booking System | **Completed** | [📂 `Lab5/` Deliverables](./Lab5/README.md) |
+| **Lab 6** | **Code and Branch Coverage Analysis** | Problem Statement #43 – Warranty Claims Processing System | **Completed** | [📂 `Lab6/` Deliverables](./Lab6/README.md) |
 
 ---
 
@@ -79,3 +80,22 @@
   - Reproduction guide: [`Lab5/README.md`](./Lab5/README.md).
   - Source: [SETAPESU26/L5_43_hotel_booking_system](https://github.com/SETAPESU26/L5_43_hotel_booking_system)
 
+
+---
+
+### 6. [Lab-6: Code and Branch Coverage Analysis — Warranty Claims](./Lab6/)
+- **Assigned Problem Statement:** #43 – Warranty Claims Processing System (warranty_claims.py)
+- **Deliverables:**
+  - Application source file: [warranty_claims.py](./Lab6/warranty_claims.py)
+  - Code coverage test suite: [CodeCoverageTest_warranty_claims.py](./Lab6/CodeCoverageTest_warranty_claims.py) (14/14 tests passing, **100% Statement Coverage**).
+  - Deliverable alias: [CodeCoverageTest_warranty_claims_application.py](./Lab6/CodeCoverageTest_warranty_claims_application.py).
+  - Branch coverage test suite: [BranchCoverageTest_warranty_claims.py](./Lab6/BranchCoverageTest_warranty_claims.py) (40/40 tests passing, **100% Branch Coverage**, 26/26 decision branches).
+  - Deliverable alias: [BranchCoverageTest_warranty_claims_application.py](./Lab6/BranchCoverageTest_warranty_claims_application.py).
+  - Unified runner test suite: [	est_warranty_claims.py](./Lab6/test_warranty_claims.py).
+  - Authentic high-resolution terminal output screenshots:
+    - [screenshots/01_initial_coverage.png](./Lab6/screenshots/01_initial_coverage.png) (Initial 38% coverage baseline)
+    - [screenshots/02_code_coverage_analysis.png](./Lab6/screenshots/02_code_coverage_analysis.png) (100% Statement / Line Coverage report)
+    - [screenshots/03_branch_coverage_analysis.png](./Lab6/screenshots/03_branch_coverage_analysis.png) (100% Branch Coverage report)
+  - Detailed report & analysis: [Lab6/README.md](./Lab6/README.md).
+  - Minimum 2 git commit milestones achieved.
+  - Source: [SETAPESU26/L6_L7_43_warranty_claims](https://github.com/SETAPESU26/L6_L7_43_warranty_claims)
