@@ -30,6 +30,8 @@
 
 ### Environment & Tools
 - **Operating System:** Windows 11 x64
+- **Editor / IDE:** Visual Studio Code
+- **Terminal:** PowerShell
 - **Python Version:** 3.11.9
 - **Test Framework:** `pytest 9.2.0`
 - **Coverage Tool:** `coverage 7.17.1`
@@ -46,9 +48,9 @@
 | [`BranchCoverageTest_warranty_claims.py`](./BranchCoverageTest_warranty_claims.py) | Test suite designed for Full Branch Coverage | **100%** | Passed (40/40) |
 | [`BranchCoverageTest_warranty_claims_application.py`](./BranchCoverageTest_warranty_claims_application.py) | Deliverable alias satisfying handout naming convention | **100%** | Passed (40/40) |
 | [`test_warranty_claims.py`](./test_warranty_claims.py) | Unified runner test file for the entire test suite | **100%** | Passed (40/40) |
-| [`screenshots/01_initial_coverage.png`](./screenshots/01_initial_coverage.png) | Terminal screenshot of initial baseline coverage (38% line) | Baseline | Captured |
-| [`screenshots/02_code_coverage_analysis.png`](./screenshots/02_code_coverage_analysis.png) | Terminal screenshot of Code Coverage execution (100% line) | >90% | Captured |
-| [`screenshots/03_branch_coverage_analysis.png`](./screenshots/03_branch_coverage_analysis.png) | Terminal screenshot of Branch Coverage execution (100% branch) | >90% | Captured |
+| [`screenshots/01_initial_coverage.png`](./screenshots/01_initial_coverage.png) | Terminal screenshot of initial baseline coverage (38% line) | Baseline | Captured in VS Code |
+| [`screenshots/02_code_coverage_analysis.png`](./screenshots/02_code_coverage_analysis.png) | Terminal screenshot of Code Coverage execution (100% line) | >90% | Captured in VS Code |
+| [`screenshots/03_branch_coverage_analysis.png`](./screenshots/03_branch_coverage_analysis.png) | Terminal screenshot of Branch Coverage execution (100% branch) | >90% | Captured in VS Code |
 
 ---
 
@@ -87,31 +89,22 @@ COVERED_MONTHS = {"basic": 12, "standard": 24, "premium": 36}
 
 ## 4. Initial Baseline Coverage Analysis
 
-### Initial Test File (`test_warranty_claims.py`)
-The starter repository contained only two basic tests:
-```python
-def test_within_warranty():
-    assert out_of_warranty_charge("standard", 20, "defect", False) == 0
-
-def test_claim_allowed():
-    assert claim_allowed(60, 1, False) is True
-```
-
-### Baseline Execution Command
+### Initial Test Execution
+Running the initial example tests before expanding coverage:
 ```powershell
-coverage run -m pytest test_warranty_claims.py
+coverage run -m pytest -k "test_within_warranty_example or test_claim_allowed_example" CodeCoverageTest_warranty_claims.py
 coverage report -m
 ```
 
-### Baseline Terminal Output Screenshot
+### Baseline Terminal Output Screenshot (Captured in VS Code Terminal)
 ![Initial Coverage Screenshot](./screenshots/01_initial_coverage.png)
 
 ### Baseline Coverage Metrics Table
 | Module | Statements | Missing Lines | Statement Coverage | Missing Line Numbers |
 | :--- | :---: | :---: | :---: | :--- |
 | `warranty_claims.py` | 37 | 23 | **38%** | 6, 8, 11, 15-23, 28, 30, 35-45 |
-| `test_warranty_claims.py` | 6 | 0 | 100% | None |
-| **Total** | **43** | **23** | **47%** | — |
+| `CodeCoverageTest_warranty_claims.py` | 32 | 14 | 56% | 34-35, 40-41, 52, 63, 74, 79, 84, 89, 94, 103, 112, 121 |
+| **Total** | **69** | **37** | **46%** | — |
 
 ### Identified Deficiencies in Initial Suite
 - **Input Validation Deficiencies:** Unknown plan exception (line 6) and negative age exception (line 8) were never executed.
@@ -154,15 +147,15 @@ coverage run -m pytest CodeCoverageTest_warranty_claims.py
 coverage report -m
 ```
 
-### Code Coverage Terminal Output Screenshot
+### Code Coverage Terminal Output Screenshot (Captured in VS Code Terminal)
 ![Code Coverage Analysis Screenshot](./screenshots/02_code_coverage_analysis.png)
 
 ### Code Coverage Verification Table
 | Module | Total Statements | Missing Statements | Statement Coverage | Status |
 | :--- | :---: | :---: | :---: | :---: |
-| `CodeCoverageTest_warranty_claims.py` | 32 | 0 | 100% | 14 Passed |
+| `CodeCoverageTest_warranty_claims.py` | 32 | 0 | 100% | 14 Passed (0.27s) |
 | `warranty_claims.py` | 37 | 0 | **100%** | **Target Achieved (>90%)** |
-| **TOTAL** | **69** | **0** | **100%** | **Full Coverage** |
+| **TOTAL** | **69** | **0** | **100%** | **Full Statement Coverage** |
 
 ---
 
@@ -217,29 +210,29 @@ coverage run --branch -m pytest BranchCoverageTest_warranty_claims.py
 coverage report -m
 ```
 
-### Branch Coverage Terminal Output Screenshot
+### Branch Coverage Terminal Output Screenshot (Captured in VS Code Terminal)
 ![Branch Coverage Analysis Screenshot](./screenshots/03_branch_coverage_analysis.png)
 
 ### Branch Coverage Verification Table
 | Module | Stmts | Miss | Total Branches | Partial Branches (BrPart) | Branch Coverage | Status |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `BranchCoverageTest_warranty_claims.py` | 89 | 0 | 0 | 0 | 100% | 40 Passed |
+| `BranchCoverageTest_warranty_claims.py` | 89 | 0 | 0 | 0 | 100% | 40 Passed (0.44s) |
 | `warranty_claims.py` | 37 | 0 | 26 | 0 | **100%** | **Target Achieved (>90%)** |
-| **TOTAL** | **126** | **0** | **26** | **0** | **100%** | **All Branches Covered** |
+| **TOTAL** | **126** | **0** | **26** | **0** | **100%** | **All 26 Branches Covered** |
 
 ---
 
 ## 7. Comparative Coverage Progression
 
-| Metric | Initial Test Suite | After Code Coverage Suite | After Branch Coverage Suite |
+| Metric | Initial Test Execution | After Code Coverage Suite | After Branch Coverage Suite |
 | :--- | :---: | :---: | :---: |
-| **Total Test Cases** | 2 | 14 | **40** |
+| **Total Test Cases** | 2 passed (12 deselected) | 14 passed | **40 passed** |
 | **Statements Covered (`warranty_claims.py`)** | 14 / 37 | 37 / 37 | **37 / 37** |
 | **Statement Coverage %** | 38% | **100%** | **100%** |
 | **Missing Statements** | 23 lines | 0 lines | **0 lines** |
 | **Branches Covered (`warranty_claims.py`)** | 6 / 26 (partial) | 26 / 26 | **26 / 26 (100%)** |
 | **Branch Coverage %** | 32% | 98% (partial) | **100%** |
-| **Execution Time** | 0.10s | 0.15s | 0.26s |
+| **Execution Time** | 0.10s | 0.27s | 0.44s |
 
 ---
 
@@ -253,7 +246,7 @@ In accordance with the laboratory evaluation rubric, changes were committed in t
    - **Contents:** Staged `CodeCoverageTest_warranty_claims.py`, `CodeCoverageTest_warranty_claims_application.py`, initial coverage screenshots, and code coverage report.
 
 2. **Commit 2 (Branch Coverage Milestone):**
-   - **Hash:** *(Subsequent commit)*
+   - **Hash:** `6ffb42d`
    - **Message:** `Lab 6: implement targeted branch coverage test suite (100% branch coverage) and branch analysis report`
    - **Contents:** Staged `BranchCoverageTest_warranty_claims.py`, `BranchCoverageTest_warranty_claims_application.py`, full branch coverage screenshots, updated `test_warranty_claims.py`, and complete Lab 6 analysis report.
 
