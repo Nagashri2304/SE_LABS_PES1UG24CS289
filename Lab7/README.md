@@ -17,7 +17,7 @@
 | **2. Fixed Application Python Script** | [`warranty_claims.py`](./warranty_claims.py) | **Completed** | Defensively hardened against `NoneType`, malformed delimiters, empty tokens, and non-numeric values. |
 | **3. Updated Test Code (Hypothesis)** | [`test_warranty_claims.py`](./test_warranty_claims.py) | **Completed** | Property-based fuzz test suite using Hypothesis (`@given(st.text() \| st.none())`). |
 | **Buggy Starter Application (Backup)** | [`warranty_claims_buggy.py`](./warranty_claims_buggy.py) | **Preserved** | Original starter code for transparent before/after verification. |
-| **Terminal Output Screenshots** | [`screenshots/`](./screenshots/) | **Captured** | All 4 step screenshots (Step 2, Step 4, Step 5, Step 6). |
+| **Terminal Output Screenshots** | [`screenshots/`](./screenshots/) | **Captured** | Real VS Code terminal captures for all 4 execution steps. |
 
 ---
 
@@ -42,19 +42,24 @@ pip install pytest
 
 ## 3. Step 2: Running the Buggy Application
 
-The starter application processes user inputs for plan parsing, age averaging, and payable charge calculation. When given ideal inputs, it operates normally:
+The starter application processes user inputs for plan parsing, age averaging, and payable charge calculation. When given ideal inputs it works, but without defensive handling, any missing delimiter immediately causes a fatal crash:
 
 ```powershell
-python warranty_claims.py
+python warranty_claims_buggy.py
 ```
 
-### Terminal Output Screenshot
+### Terminal Output Screenshot (Captured in VS Code)
 ![Buggy Application Run](./screenshots/01_buggy_app_run.png)
 
-### Normal Behavior Log
+### Observed Crash on Missing Delimiter
 - `Enter plan:age in months (e.g. standard:30): standard:30` $\rightarrow$ `('Standard', 30.0)`
-- `Enter product ages as CSV (e.g. 12,24,36): 12,24,36` $\rightarrow$ `24`
-- `Enter charge|discount (e.g. 1500|200): 1500|200` $\rightarrow$ `1570.0`
+- `Enter product ages as CSV (e.g. 12,24,36): 24` $\rightarrow$ `24`
+- `Enter charge|discount (e.g. 1500|200): 1500` $\rightarrow$ **Fatal Unhandled Crash!**
+  ```text
+  ValueError: not enough values to unpack (expected 2, got 1)
+  File "warranty_claims_buggy.py", line 10, in payable_charge
+      charge, discount = text.split('|')
+  ```
 
 ---
 
@@ -94,7 +99,7 @@ def test_payable_charge_no_crash(s):
 pytest test_warranty_claims.py
 ```
 
-### Terminal Output Screenshot (Fuzz Tests Failing)
+### Terminal Output Screenshot (Captured in VS Code — 3 Failures)
 ![Fuzz Tests Failing](./screenshots/02_fuzz_tests_failing.png)
 
 ### Root Cause Analysis of Fuzzing Discoveries
@@ -175,13 +180,15 @@ def payable_charge(text):
         return 0.0
 ```
 
-### Running Fixed Application
+### Running Fixed Application in VS Code
 ```powershell
 python warranty_claims.py
 ```
 
-### Terminal Output Screenshot (Fixed Application Run)
+### Terminal Output Screenshot (Captured in VS Code — Fixed Application Run)
 ![Fixed Application Run](./screenshots/03_fixed_app_run.png)
+
+*Notice that on input `200` without delimiter `|` (which crashed the buggy application in Step 2), the hardened application executes safely without crashing, returning `Payable Charge: 0.0`.*
 
 ---
 
@@ -191,13 +198,13 @@ python warranty_claims.py
 pytest test_warranty_claims.py
 ```
 
-### Terminal Output Screenshot (All Tests Passing)
+### Terminal Output Screenshot (Captured in VS Code — All 3 Passed in 1.58s)
 ![Fuzz Tests Passing](./screenshots/04_fuzz_tests_passing.png)
 
 ### Result
 Hypothesis ran through hundreds of pseudo-random inputs including Unicode strings, control characters, null bytes, and empty inputs without causing a single unhandled exception or crash:
 ```
-============================== 3 passed in 0.45s ==============================
+============================== 3 passed in 1.58s ==============================
 ```
 
 ---
@@ -208,8 +215,8 @@ Hypothesis ran through hundreds of pseudo-random inputs including Unicode string
 | :--- | :--- | :--- | :--- |
 | **`None` input** | Crashes with `AttributeError` | Returns safe fallback (`None, 0.0` or `0`) | Eliminates null pointer dereference |
 | **Empty string `""`** | Crashes with `ValueError` | Returns safe default | Eliminates crash on blank form submissions |
-| **Delimiter missing** | Crashes with `ValueError` (unpacking) | Returns safe default | Resilient against malformed API payloads |
-| **Non-numeric token** | Crashes with `ValueError` | Safely skips invalid token or defaults | Prevents Denial of Service (DoS) |
+| **Delimiter missing (`"1500"`)** | Crashes with `ValueError` (unpacking) | Returns safe default (`0.0`) | Resilient against malformed API payloads |
+| **Non-numeric token (`"abc"`)** | Crashes with `ValueError` | Safely skips invalid token or defaults | Prevents Denial of Service (DoS) |
 | **Valid inputs (`standard:30`)** | Returns `('Standard', 30.0)` | Returns `('Standard', 30.0)` | **100% backward compatibility preserved** |
 
 ---
@@ -225,13 +232,16 @@ cd C:\Users\DELL\SE_LABS_PES1UG24CS289\Lab7
 # Step 1: Install dependencies
 pip install hypothesis pytest
 
-# Step 2: Run application
-python warranty_claims.py
-# (Enter standard:30, 12,24,36, and 1500|200 when prompted)
+# Step 2: Run buggy application
+python warranty_claims_buggy.py
 
-# Step 4: Run fuzz tests (to verify failures on buggy code)
-# (Copy warranty_claims_buggy.py over warranty_claims.py to see failures)
-# pytest test_warranty_claims.py
+# Step 4: Run fuzz tests on buggy code (to see failures)
+Copy-Item warranty_claims_buggy.py warranty_claims.py
+pytest test_warranty_claims.py
+
+# Step 5: Restore and run fixed application
+git checkout warranty_claims.py
+python warranty_claims.py
 
 # Step 6: Run fuzz tests on hardened code (all passing)
 pytest test_warranty_claims.py
