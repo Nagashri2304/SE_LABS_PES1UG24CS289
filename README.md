@@ -99,3 +99,20 @@
   - Detailed report & analysis: [Lab6/README.md](./Lab6/README.md).
   - Minimum 2 git commit milestones achieved.
   - Source: [SETAPESU26/L6_L7_43_warranty_claims](https://github.com/SETAPESU26/L6_L7_43_warranty_claims)
+
+---
+
+### 7. [Lab-7: Fuzzing for Input Validation Bugs — Warranty Claims](./Lab7/)
+- **Assigned Problem Statement:** #43 – Warranty Claims Processing System (warranty_claims.py)
+- **Deliverables:**
+  - Hardened application source file: [warranty_claims.py](./Lab7/warranty_claims.py) (Defensively hardened against crashes).
+  - Buggy starter backup: [warranty_claims_buggy.py](./Lab7/warranty_claims_buggy.py).
+  - Property-based fuzz test suite: [	est_warranty_claims.py](./Lab7/test_warranty_claims.py) (Hypothesis @given(st.text() | st.none())).
+  - Formal PDF Report: [Lab_7_FuzzTesting_Report.pdf](./Lab7/Lab_7_FuzzTesting_Report.pdf) (Deliverable 1: PDF Document with screenshots and analysis).
+  - Authentic terminal output screenshots:
+    - [screenshots/01_buggy_app_run.png](./Lab7/screenshots/01_buggy_app_run.png) (Step 2: Buggy app baseline execution)
+    - [screenshots/02_fuzz_tests_failing.png](./Lab7/screenshots/02_fuzz_tests_failing.png) (Step 4: Hypothesis exposing unhandled exceptions)
+    - [screenshots/03_fixed_app_run.png](./Lab7/screenshots/03_fixed_app_run.png) (Step 5: Hardened app execution)
+    - [screenshots/04_fuzz_tests_passing.png](./Lab7/screenshots/04_fuzz_tests_passing.png) (Step 6: Hypothesis tests passing on hardened code)
+  - Detailed report & analysis: [Lab7/README.md](./Lab7/README.md).
+  - Source: [SETAPESU26/L6_L7_43_warranty_claims](https://github.com/SETAPESU26/L6_L7_43_warranty_claims)
